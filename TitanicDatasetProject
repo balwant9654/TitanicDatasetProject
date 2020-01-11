@@ -1,0 +1,88 @@
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import math
+
+%matplotlib inline
+titanic_data=pd.read_csv("train.csv")
+print("# of passengers travelling in titanic :" + str(len(titanic_data.index)))
+titanic_data.head(10)
+
+sns.countplot(x='Survived',data=titanic_data)
+
+sns.countplot(x='Survived',hue='Sex',data=titanic_data)
+
+sns.countplot(x='Survived',hue='Pclass',data=titanic_data)
+
+titanic_data['Age'].plot.hist()
+
+titanic_data['Fare'].plot.hist(bins=20,figsize=(10,5))
+
+titanic_data.info()
+
+sns.countplot(x='SibSp',data=titanic_data)
+
+sns.countplot(x='Parch',data=titanic_data)
+
+titanic_data.isnull()
+
+titanic_data.isnull().sum()
+
+sns.heatmap(titanic_data.isnull(),yticklabels=True,cmap='viridis')
+
+sns.boxplot(x='Pclass',y='Age',data=titanic_data)
+
+titanic_data.head(5)
+
+titanic_data.drop('Cabin',axis=1,inplace=True)
+titanic_data.head(5)
+
+titanic_data.dropna(inplace=True)
+sns.heatmap(titanic_data.isnull(),yticklabels=False,cmap='viridis')
+
+titanic_data.isnull().sum()
+
+titanic_data.head(2)
+
+sex=pd.get_dummies(titanic_data['Sex'],drop_first=True)
+sex.head(3)
+
+embark=pd.get_dummies(titanic_data['Embarked'],drop_first=True)
+embark.head(5)
+
+pcl=pd.get_dummies(titanic_data['Pclass'],drop_first=True)
+pcl.head(4)
+
+titanic_data=pd.concat([titanic_data,sex,embark,pcl],axis=1)
+
+titanic_data.head(4)
+titanic_data.drop(['PassengerId','Pclass','Name','Sex','Ticket','Embarked'],axis=1,inplace=True)
+
+titanic_data.head(5)
+
+X=titanic_data.drop("Survived",axis=1)
+y=titanic_data['Survived']
+
+from sklearn.model_selection import train_test_split
+
+X_train,X_test,Y_train,Y_test=train_test_split(X,y,test_size=0.3,random_state=42)
+
+from sklearn.linear_model import LogisticRegression
+
+logmodel=LogisticRegression()
+
+logmodel.fit(X_train,Y_train)
+predictions=logmodel.predict(X_test)
+
+from sklearn.metrics import classification_report
+
+classification_report(Y_test,predictions)
+
+from sklearn.metrics import confusion_matrix
+
+confusion_matrix(Y_test,predictions)
+
+from sklearn.metrics import accuracy_score
+
+accuracy_score(Y_test,predictions)
